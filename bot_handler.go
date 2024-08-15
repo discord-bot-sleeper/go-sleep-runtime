@@ -12,11 +12,11 @@ type Worker struct {
 	StopChan chan struct{}
 }
 
-func (w *Worker) Start(wg *sync.WaitGroup) {
+func (w *Worker) Start(wg *sync.WaitGroup, workers *map[string]*Worker) {
 	defer wg.Done()
 	fmt.Println("Bot worker started with uuid = ", w.UUID)
 	terminateChan := make(chan struct{})
-	addBot(terminateChan, w.UUID, w.Token)
+	go addBot(terminateChan, w.UUID, w.Token)
 
 	for {
 		select {
@@ -24,7 +24,9 @@ func (w *Worker) Start(wg *sync.WaitGroup) {
 			fmt.Println("stopping bot with uuid ", w.UUID)
 			close(terminateChan)
 			return
-
+		case <-terminateChan:
+			delete(*workers, w.UUID)
+			return
 		default:
 			time.Sleep(500 * time.Millisecond)
 		}

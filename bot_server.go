@@ -19,15 +19,19 @@ func NewServer() *Server {
 func (s *Server) startWorker(uuid string, token string, wg *sync.WaitGroup) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if _, ok := s.Workers[uuid]; ok {
+		fmt.Println("Bot with UUID " + uuid + " already exists")
+		return
+	}
 
 	worker := &Worker{
-		Token:    uuid,
-		UUID:     token,
+		Token:    token,
+		UUID:     uuid,
 		StopChan: make(chan struct{}),
 	}
 	s.Workers[uuid] = worker
 	wg.Add(1)
-	go worker.Start(wg)
+	go worker.Start(wg, &s.Workers)
 }
 
 func (s *Server) stopWorker(uuid string) {

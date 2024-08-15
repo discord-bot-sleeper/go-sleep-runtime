@@ -20,6 +20,7 @@ func startWebServer(ch chan struct{}, shutdownWG *sync.WaitGroup) {
 	wg = sync.WaitGroup{}
 	http.HandleFunc("/add", getAdd)
 	http.HandleFunc("/remove", getRemove)
+	fmt.Println("Started web server")
 
 	go func() {
 		err := http.ListenAndServe(":3333", nil)

@@ -11,25 +11,27 @@ import (
 func addBot(StopChan chan struct{}, UUID string, token string) {
 	discord, err := discordgo.New("Bot " + token)
 	if err != nil {
-		fmt.Println("Error initializing bot", err)
+		fmt.Println("Error initializing bot with Token= ", token, "\n", err)
 		return
 	}
+	discord.StateEnabled = false
 
 	discord.AddHandler(messageCreate)
 	discord.AddHandler(func(Session *discordgo.Session, Interaction *discordgo.InteractionCreate) {
 		handleCommand(Session, Interaction)
 	})
 
-	discord.Identify.Intents = discordgo.IntentsGuildMessages
-	discord.Identify.Intents |= discordgo.IntentMessageContent
+	//discord.Identify.Intents = discordgo.IntentsGuildMessages
+	//discord.Identify.Intents |= discordgo.IntentMessageContent
 	err = discord.Open()
 	if err != nil {
-		fmt.Print("error opening websocket", err)
+		fmt.Print("error opening websocket with token = ", token, "\n", err)
+		close(StopChan)
 		return
 	}
 	fmt.Println("started bot")
 
-	discord.Close()
+	//discord.Close()
 
 	for {
 		select {
