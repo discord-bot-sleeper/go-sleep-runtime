@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	_ "net/http/pprof"
+	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-func addBot(StopChan chan struct{}, UUID string, token string) {
+func addBot(StopChan chan struct{}, UUID string, token string, wg *sync.WaitGroup) {
+	defer wg.Done()
 	discord, err := discordgo.New("Bot " + token)
 	if err != nil {
 		fmt.Println("Error initializing bot with Token= ", token, "\n", err)

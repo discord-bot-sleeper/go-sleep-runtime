@@ -13,10 +13,9 @@ type Worker struct {
 }
 
 func (w *Worker) Start(wg *sync.WaitGroup, workers *map[string]*Worker) {
-	defer wg.Done()
 	fmt.Println("Bot worker started with uuid = ", w.UUID)
 	terminateChan := make(chan struct{})
-	go addBot(terminateChan, w.UUID, w.Token)
+	go addBot(terminateChan, w.UUID, w.Token, wg)
 
 	for {
 		select {
