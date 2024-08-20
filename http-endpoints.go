@@ -22,10 +22,11 @@ func startWebServer(ch chan struct{}, shutdownWG *sync.WaitGroup) {
 	http.HandleFunc("/add", getAdd)
 	http.HandleFunc("/remove", getRemove)
 	http.HandleFunc("/current", getCurrent)
+	http.HandleFunc("/list", getList)
 	fmt.Println("Started web server")
 
 	go func() {
-		err := http.ListenAndServe(":3333", nil)
+		err := http.ListenAndServe(":8080", nil)
 		if errors.Is(err, http.ErrServerClosed) {
 			fmt.Printf("server closed\n")
 		} else if err != nil {
@@ -67,7 +68,7 @@ func getAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("Received JSON: %+v\n", reqBody)
-	response := fmt.Sprintf("Received data: Token = %s, UUID = %s", reqBody.Token, reqBody.Uuid)
+	response := fmt.Sprintf("Started worker %s!\n", reqBody.Uuid)
 
 	server.startWorker(reqBody.Uuid, reqBody.Token, &wg)
 	io.WriteString(w, response)
@@ -98,12 +99,16 @@ func getRemove(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("Received JSON: %+v\n", reqBody)
-	response := fmt.Sprintf("Received data: UUID = %s", reqBody.UUID)
+	response := fmt.Sprintf("Stopped worker %s!\n", reqBody.UUID)
 
 	server.stopWorker(reqBody.UUID)
 	io.WriteString(w, response)
 }
 
 func getCurrent(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Currently running "+strconv.Itoa(server.countWorkers())+" workers")
+	io.WriteString(w, "Currently running "+strconv.Itoa(server.countWorkers())+" workers!\n")
+}
+
+func getList(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, server.listUuids()+"\n")
 }

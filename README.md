@@ -15,3 +15,4 @@ bot2
 curl -X POST http://localhost:3333/remove -H "Content-Type: application/json" -d '{"uuid": "1234"}'
 
 CURRENT metodi: curl http://localhost:3333/current
+LIST metodi: curl http://localhost:3333/list

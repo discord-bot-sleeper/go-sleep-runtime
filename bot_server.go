@@ -64,3 +64,11 @@ func (s *Server) stopAllWorkers() {
 func (s *Server) countWorkers() int {
 	return len(s.Workers)
 }
+
+func (s *Server) listUuids() string {
+	var val = ""
+	for key := range s.Workers {
+		val += key + ", "
+	}
+	return val
+}
