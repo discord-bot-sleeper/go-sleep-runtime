@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 )
 
@@ -20,6 +21,7 @@ func startWebServer(ch chan struct{}, shutdownWG *sync.WaitGroup) {
 	wg = sync.WaitGroup{}
 	http.HandleFunc("/add", getAdd)
 	http.HandleFunc("/remove", getRemove)
+	http.HandleFunc("/current", getCurrent)
 	fmt.Println("Started web server")
 
 	go func() {
@@ -100,4 +102,8 @@ func getRemove(w http.ResponseWriter, r *http.Request) {
 
 	server.stopWorker(reqBody.UUID)
 	io.WriteString(w, response)
+}
+
+func getCurrent(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "Currently running "+strconv.Itoa(server.countWorkers())+" workers")
 }

@@ -60,3 +60,7 @@ func (s *Server) stopAllWorkers() {
 	}
 
 }
+
+func (s *Server) countWorkers() int {
+	return len(s.Workers)
+}
