@@ -18,5 +18,4 @@ COPY --from=builder /app/sleeper /app/sleeper
 
 EXPOSE 8080
 
-# Command to run the executable
 CMD ["/app/sleeper"]
